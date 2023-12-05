@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.6.0",
+    "@tanstack/react-table": "^8.10.7",
     "bowlingx-znv": "^0.4.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",

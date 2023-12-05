@@ -50,4 +50,29 @@ for (const p of packages) {
   console.log(`📦 Seeded package '${p}'`);
 }
 
+await prisma.canIUse.upsert({
+  where: { runtimeA: { name: "nodejs" }, packageA: { name: "next" } },
+  update: {},
+  create: {
+    working: "YES",
+    runtimeA: { connect: { name: "nodejs" } },
+    packageA: { connect: { name: "next" } },
+  },
+});
+
+// TODO: nao sei como  fazer isso
+// porque ate entao estou conectando A e B
+// mas se eu gravar B e A nao seria a mesma coisa....
+// talvez seria interessante conctar features e cada feature ter cadastrado aonde ela funciona
+
+await prisma.canIUse.upsert({
+  where: { id: "" },
+  update: {},
+  create: {
+    working: "YES",
+    packageA: { connect: { name: "react" } },
+    packageB: { connect: { name: "next" } },
+  },
+});
+
 await prisma.$disconnect();

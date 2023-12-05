@@ -9,3 +9,80 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Package {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  versions Version[]
+  canIUseA CanIUse[] @relation("packageA")
+  canIUseB CanIUse[] @relation("packageB")
+}
+
+model Runtime {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  versions Version[]
+  canIUseA CanIUse[] @relation("runtimeA")
+  canIUseB CanIUse[] @relation("runtimeB")
+}
+
+model Version {
+  id       String    @id @default(cuid())
+  version  String
+  packages Package[]
+  runtimes Runtime[]
+  features Feature[]
+  canIUseA CanIUse[] @relation("versionA")
+  canIUseB CanIUse[] @relation("versionB")
+}
+
+model Feature {
+  id       String    @id @default(cuid())
+  name     String
+  versions Version[]
+  canIUseA CanIUse[] @relation("featureA")
+  canIUseB CanIUse[] @relation("featureB")
+}
+
+enum DoesItWork {
+  YES
+  NO
+  UNKNOWN
+}
+
+model CanIUse {
+  id         String     @id @default(cuid())
+  working    DoesItWork
+  issues     Issue[]
+  packageA   Package?   @relation("packageA", fields: [packageAId], references: [id])
+  packageAId String?
+  runtimeA   Runtime?   @relation("runtimeA", fields: [runtimeAId], references: [id])
+  runtimeAId String?
+  versionA   Version?   @relation("versionA", fields: [versionAId], references: [id])
+  versionAId String?
+  featureA   Feature?   @relation("featureA", fields: [featureAId], references: [id])
+  featureAId String?
+  packageB   Package?   @relation("packageB", fields: [packageBId], references: [id])
+  packageBId String?
+  runtimeB   Runtime?   @relation("runtimeB", fields: [runtimeBId], references: [id])
+  runtimeBId String?
+  versionB   Version?   @relation("versionB", fields: [versionBId], references: [id])
+  versionBId String?
+  featureB   Feature?   @relation("featureB", fields: [featureBId], references: [id])
+  featureBId String?
+}
+
+model Issue {
+  id        String  @id @default(cuid())
+  url       String
+  canIUse   CanIUse @relation(fields: [canIUseId], references: [id])
+  canIUseId String
+}
